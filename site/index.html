@@ -3,7 +3,8 @@
 <title>Visit counter</title>
 <h1 id="out">Loading...</h1>
 <script>
-  const API = location.port === "8081" ? "http://localhost:8082" : "/api";
+  // "api" sans "/" : relatif à la page, donc /api sur :8443 et /counter/api sous /counter/
+  const API = location.port === "8081" ? "http://localhost:8082" : "api";
   fetch(API + "/visits")
     .then((r) => r.json())
     .then((d) => (out.textContent = `Visits to this page: ${d.visits}`))
