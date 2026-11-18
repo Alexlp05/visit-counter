@@ -1,22 +1,28 @@
+# Ce qui change sur le serveur (en plus de compose.yaml) :
+#   docker compose -f compose.yaml -f compose.server.yaml up -d --build
+#
+# Aucun port publié : le site et l'API ne sont joignables qu'à travers le Caddy
+# du serveur (dossier caddy/, à côté des projets), sur le port 8443, via le
+# réseau Docker "web".
 services:
   site:
     ports: !reset []
     restart: unless-stopped
+    networks:
+      web:
+        aliases:
+          - counter-site
   api:
     ports: !reset []
     restart: unless-stopped
+    networks:
+      default: # pour joindre la base
+      web:
+        aliases:
+          - counter-api
   db:
     restart: unless-stopped
-  caddy:
-    image: caddy:2.11-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-volumes:
-  caddy-data:
-  caddy-config:
+
+networks:
+  web:
+    external: true
